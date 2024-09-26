@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationCodeMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\VerificationCode;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -81,9 +83,47 @@ class AuthController extends Controller
             ['email' => $user->email],
             ['email' => $user->email, 'token' => $token]
         );
-
+        // Doğrulama kodunu kaydet ve geçerlilik süresini 10 dakika ayarla
+        VerificationCode::create([
+            'email' => $request->email,
+            'code' => $token,
+            'expires_at' => Carbon::now()->addMinutes(10),
+        ]);
         Mail::to($user->email)->send(new VerificationCodeMail($token));
 
         return response()->json(['message' => 'Reset password link sent to your email', 'token' => $token]);
+    }
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        // Doğrulama kodunu bul
+        $verificationCode = VerificationCode::where('email', $request->email)
+            ->where('code', $request->code)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+
+        if (!$verificationCode) {
+            return response()->json(['message' => 'Geçersiz veya süresi dolmuş doğrulama kodu!'], 400);
+        }
+
+        // Kullanıcının şifresini güncelle
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Kullanıcı bulunamadı!'], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Doğrulama kodunu sil
+        $verificationCode->delete();
+
+        return response()->json(['message' => 'Şifre başarıyla sıfırlandı!']);
     }
 }
