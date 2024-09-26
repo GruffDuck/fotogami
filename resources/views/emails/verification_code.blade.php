@@ -60,7 +60,7 @@
         <div class="footer">
             <p>Fotogami is a MasterPiece Studios product.</p>
             <p>If you did not request a password reset, please ignore this email.</p>
-            <p>&copy; 2024 Asktion. All rights reserved.</p>
+            <p>&copy; 2024 Fotogami. All rights reserved.</p>
         </div>
     </div>
 </body>
