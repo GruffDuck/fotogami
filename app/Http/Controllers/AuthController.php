@@ -80,19 +80,17 @@ class AuthController extends Controller
 
         $token = Str::upper(Str::random(6)); // 6 karakterlik rastgele kod oluştur
 
-        // Geçerlilik süresi ve kodun kaydedilmesi
+        // Kodun kaydedilmesi
         VerificationCode::updateOrCreate(
             ['email' => $user->email],
-            [
-                'code' => $token,
-                'expires_at' => Carbon::now()->addMinutes(10),
-            ]
+            ['code' => $token] // expires_at'ı kaldırdık
         );
 
         Mail::to($user->email)->send(new VerificationCodeMail($token));
 
         return response()->json(['message' => 'Reset password link sent to your email', 'token' => $token]);
     }
+
 
     public function resetPassword(Request $request)
     {
@@ -105,11 +103,11 @@ class AuthController extends Controller
         // Doğrulama kodunu bul
         $verificationCode = VerificationCode::where('email', $request->email)
             ->where('code', $request->code)
-            ->where('expires_at', '>', Carbon::now())
+            // expires_at kontrolünü kaldırdık
             ->first();
 
         if (!$verificationCode) {
-            return response()->json(['message' => 'Geçersiz veya süresi dolmuş doğrulama kodu!'], 400);
+            return response()->json(['message' => 'Geçersiz doğrulama kodu!'], 400);
         }
 
         // Kullanıcının şifresini güncelle
