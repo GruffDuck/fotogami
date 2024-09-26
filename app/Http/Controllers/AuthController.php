@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationCodeMail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -65,18 +67,23 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out successfully.']);
     }
-    public function sendVerificationCode(Request $request)
+    public function sendResetLinkEmail(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+        $request->validate(['email' => 'required|email']);
 
-        // 6 haneli doğrulama kodu oluştur
-        $code = rand(100000, 999999);
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-        // Doğrulama kodunu gönder
-        Mail::to($request->email)->send(new VerificationCodeMail($code));
+        $token = Str::upper(Str::random(6)); // 6 karakterlik rastgele kod oluştur
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $user->email],
+            ['email' => $user->email, 'token' => $token]
+        );
 
-        return response()->json(['message' => 'Doğrulama kodu gönderildi!']);
+        Mail::to($user->email)->send(new VerificationCodeMail($token));
+
+        return response()->json(['message' => 'Reset password link sent to your email', 'token' => $token]);
     }
 }
