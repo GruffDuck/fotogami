@@ -79,20 +79,21 @@ class AuthController extends Controller
         }
 
         $token = Str::upper(Str::random(6)); // 6 karakterlik rastgele kod oluştur
-        DB::table('password_reset_tokens')->updateOrInsert(
+
+        // Geçerlilik süresi ve kodun kaydedilmesi
+        VerificationCode::updateOrCreate(
             ['email' => $user->email],
-            ['email' => $user->email, 'token' => $token]
+            [
+                'code' => $token,
+                'expires_at' => Carbon::now()->addMinutes(10),
+            ]
         );
-        // Doğrulama kodunu kaydet ve geçerlilik süresini 10 dakika ayarla
-        VerificationCode::create([
-            'email' => $request->email,
-            'code' => $token,
-            'expires_at' => Carbon::now()->addMinutes(10),
-        ]);
+
         Mail::to($user->email)->send(new VerificationCodeMail($token));
 
         return response()->json(['message' => 'Reset password link sent to your email', 'token' => $token]);
     }
+
     public function resetPassword(Request $request)
     {
         $request->validate([
