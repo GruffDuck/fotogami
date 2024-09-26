@@ -51,14 +51,14 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="https://www.mpstudiocore.com/Logo.png" alt="Logo">
+            <img src="https://www.mpstudiocore.com/fotogamilogo.png" alt="Logo">
         </div>
         <div class="content">
             <p>You can use the following code to reset your password:</p>
             <p class="code">{{ $token }}</p>
         </div>
         <div class="footer">
-            <p>Asktion is a MasterPiece Studios product.</p>
+            <p>Fotogami is a MasterPiece Studios product.</p>
             <p>If you did not request a password reset, please ignore this email.</p>
             <p>&copy; 2024 Asktion. All rights reserved.</p>
         </div>

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificationCodeMail;
 
 class AuthController extends Controller
 {
@@ -62,5 +64,19 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out successfully.']);
+    }
+    public function sendVerificationCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        // 6 haneli doğrulama kodu oluştur
+        $code = rand(100000, 999999);
+
+        // Doğrulama kodunu gönder
+        Mail::to($request->email)->send(new VerificationCodeMail($code));
+
+        return response()->json(['message' => 'Doğrulama kodu gönderildi!']);
     }
 }
