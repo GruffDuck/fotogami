@@ -22,6 +22,6 @@ class VerificationCodeMail extends Mailable
 
     public function build()
     {
-        return $this->view('emails.reset_password')->with(['token' => $this->token]);
+        return $this->view('emails.verification_code')->with(['token' => $this->token]);
     }
 }
