@@ -77,7 +77,7 @@ class AuthController extends Controller
         }
 
         $token = Str::upper(Str::random(6)); // 6 karakterlik rastgele kod oluştur
-        DB::table('password_resets')->updateOrInsert(
+        DB::table('password_resets_tokens')->updateOrInsert(
             ['email' => $user->email],
             ['email' => $user->email, 'token' => $token]
         );
