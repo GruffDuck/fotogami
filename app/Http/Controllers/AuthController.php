@@ -137,6 +137,6 @@ class AuthController extends Controller
         $user = $request->user();
 
         // Kullanıcı bilgilerini JSON formatında döndür
-        return response()->json(['user' => $user], 200);
+        return response()->json([$user], 200);
     }
 }
