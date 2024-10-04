@@ -51,17 +51,22 @@ class AuthController extends Controller
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
-
+    
         if (!Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-
+    
         $user = Auth::user();
         $token = $user->createToken('MyApp')->plainTextToken;
-        return response()->json(['token' => $token], 200);
+    
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 200);
     }
+    
 
     // Kullanıcı çıkışı
     public function logout(Request $request)
