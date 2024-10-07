@@ -38,3 +38,4 @@ Route::get('products/organization', [ProductController::class, 'getProductsByOrg
 Route::get('/products/user', [ProductController::class, 'getProductByUser']);
 Route::get('/products/package', [ProductController::class, 'getProductByPackage']);
 Route::post('/products', [ProductController::class, 'createProduct']);
+Route::get("/products/email", [ProductController::class, 'getProductByEmail']);

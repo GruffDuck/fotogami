@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\User;
 
 class ProductController extends Controller
 {
@@ -14,7 +15,7 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    // Organization ID ile ürün getir (package bilgisiyle)
+    // Organization name ile ürün getir (package bilgisiyle)
     public function getProductsByOrganizationName(Request $request)
     {
         $validatedData = $request->validate([
@@ -74,5 +75,23 @@ class ProductController extends Controller
 
         $product = Product::create($validatedData);
         return response()->json($product, 201);
+    }
+
+    // Email ile ürün getir (package bilgisiyle)
+    public function getProductByEmail(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $validatedData['email'])->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $products = Product::where('user_id', $user->id)->with('package')->get();
+
+        return response()->json($products);
     }
 }
