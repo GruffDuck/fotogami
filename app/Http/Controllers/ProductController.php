@@ -58,8 +58,8 @@ class ProductController extends Controller
     public function createProduct(Request $request)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required',
-            'package_id' => 'required',
+            'user_id' => 'required|string',
+            'package_id' => 'required|string',
             'organization_name' => 'nullable|string',
             'organization_type' => 'required|string',
             'bride_name' => 'required|string',
@@ -67,11 +67,12 @@ class ProductController extends Controller
             'date' => 'required|date',
             'location' => 'required|string',
             'folder_name' => 'required|string',
+            'freeSpace' => 'nullable|integer',
+            'fullSpace' => 'nullable|integer',
+            'usedSpace' => 'nullable|integer',
         ]);
 
         $product = Product::create($validatedData);
-        $product->load('package');
-
         return response()->json($product, 201);
     }
 }

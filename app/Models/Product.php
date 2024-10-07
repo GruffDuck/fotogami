@@ -1,4 +1,5 @@
 <?php
+// app/Models/Product.php
 
 namespace App\Models;
 
@@ -19,12 +20,13 @@ class Product extends Model
         'date',
         'location',
         'folder_name',
+        'freeSpace',
+        'fullSpace',
+        'usedSpace'
     ];
 
-
-    // Package ile ilişki
     public function package()
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsTo(Package::class, 'package_id');
     }
 }
