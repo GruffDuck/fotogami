@@ -15,16 +15,17 @@ class ProductController extends Controller
     }
 
     // Organization ID ile ürün getir (package bilgisiyle)
-    public function getProductByOrganization(Request $request)
+    public function getProductsByOrganizationName(Request $request)
     {
-        $organizationId = $request->input('organization_id');
+        $validatedData = $request->validate([
+            'organization_name' => 'required|string',
+        ]);
 
-        if (!$organizationId) {
-            return response()->json(['error' => 'Organization ID is required'], 400);
-        }
+        $products = Product::where('organization_name', $validatedData['organization_name'])
+            ->with('package')
+            ->get();
 
-        $products = Product::where('organization_id', $organizationId)->with('package')->get();
-        return response()->json($products);
+        return response()->json($products, 200);
     }
 
     // User ID ile ürün getir (package bilgisiyle)
@@ -57,9 +58,9 @@ class ProductController extends Controller
     public function createProduct(Request $request)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'package_id' => 'required|exists:packages,id',
-            'organization_id' => 'nullable',
+            'user_id' => 'required',
+            'package_id' => 'required',
+            'organization_name' => 'nullable|string',
             'organization_type' => 'required|string',
             'bride_name' => 'required|string',
             'groom_name' => 'required|string',
@@ -69,7 +70,7 @@ class ProductController extends Controller
         ]);
 
         $product = Product::create($validatedData);
-        $product->load('package'); // Package ilişkisini de yükle
+        $product->load('package');
 
         return response()->json($product, 201);
     }

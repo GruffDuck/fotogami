@@ -12,7 +12,7 @@ class Product extends Model
     protected $fillable = [
         'user_id',
         'package_id',
-        'organization_id',
+        'organization_name',
         'organization_type',
         'bride_name',
         'groom_name',
@@ -20,6 +20,7 @@ class Product extends Model
         'location',
         'folder_name',
     ];
+
 
     // Package ile ilişki
     public function package()

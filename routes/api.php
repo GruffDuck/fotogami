@@ -34,7 +34,7 @@ Route::get('/packages', [PackageController::class, 'index']);
 
 
 Route::get('/products', [ProductController::class, 'getAllProducts']);
-Route::get('/products/organization', [ProductController::class, 'getProductByOrganization']);
+Route::get('products/organization', [ProductController::class, 'getProductsByOrganizationName']);
 Route::get('/products/user', [ProductController::class, 'getProductByUser']);
 Route::get('/products/package', [ProductController::class, 'getProductByPackage']);
 Route::post('/products', [ProductController::class, 'createProduct']);
