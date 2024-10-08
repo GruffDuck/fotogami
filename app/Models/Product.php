@@ -23,6 +23,8 @@ class Product extends Model
         'usedSpace',
         'email', // Yeni alan
         'phone', // Yeni alan
+        'guests_count' // guests_count alanı eklendi
+
     ];
 
     public function package()
