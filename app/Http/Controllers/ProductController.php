@@ -71,6 +71,8 @@ class ProductController extends Controller
             'freeSpace' => 'nullable|integer',
             'fullSpace' => 'nullable|integer',
             'usedSpace' => 'nullable|integer',
+            'email' => 'nullable|email',  // Email alanı eklendi
+            'phone' => 'nullable|string', // Telefon alanı eklendi
         ]);
 
         $product = Product::create($validatedData);

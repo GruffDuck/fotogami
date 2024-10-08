@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
         'package_id',
@@ -22,11 +20,13 @@ class Product extends Model
         'folder_name',
         'freeSpace',
         'fullSpace',
-        'usedSpace'
+        'usedSpace',
+        'email', // Yeni alan
+        'phone', // Yeni alan
     ];
 
     public function package()
     {
-        return $this->belongsTo(Package::class, 'package_id');
+        return $this->belongsTo(Package::class);
     }
 }
