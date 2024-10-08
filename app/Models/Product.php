@@ -23,7 +23,9 @@ class Product extends Model
         'usedSpace',
         'email', // Yeni alan
         'phone', // Yeni alan
-        'guests_count' // guests_count alanı eklendi
+        'guests_count', // guests_count alanı eklendi
+        'description'    // description alanı eklendi
+
 
     ];
 

@@ -74,6 +74,7 @@ class ProductController extends Controller
             'email' => 'nullable|email',  // Email alanı eklendi
             'phone' => 'nullable|string', // Telefon alanı eklendi
             'guests_count' => 'nullable|integer', // guests_count alanı eklendi
+            'description' => 'nullable|string',    // description alanı eklendi
 
         ]);
 
