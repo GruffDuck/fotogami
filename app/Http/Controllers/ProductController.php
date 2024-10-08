@@ -89,13 +89,13 @@ class ProductController extends Controller
             'email' => 'required|email',
         ]);
 
-        $user = User::where('email', $validatedData['email'])->first();
+        // Belirtilen e-posta adresine sahip ürünleri al
+        $products = Product::where('email', $validatedData['email'])->with('package')->get();
 
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+        // Eğer ürün yoksa uygun bir mesaj döndür
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'No products found for this email.'], 404);
         }
-
-        $products = Product::where('user_id', $user->id)->with('package')->get();
 
         return response()->json($products);
     }
