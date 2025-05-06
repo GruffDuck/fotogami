@@ -97,8 +97,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'E-posta adresi doğrulandı.',
-            'user' => $user
+            'message' => 'E-posta adresi doğrulandı.'
         ], 200);
     }
 
