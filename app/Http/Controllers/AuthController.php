@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         // Token ve kurtarma anahtarı ile birlikte kullanıcı bilgilerini döndür
         return response()->json([
-            'user' => $user, 
+            'user' => $user,
             'token' => $token,
             'recovery_key' => $recoveryKey
         ], 201);
@@ -87,21 +87,19 @@ class AuthController extends Controller
         $request->validate(['email' => 'required|email']);
 
         $user = User::where('email', $request->email)->first();
+
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bu e-posta adresi sistemde kayıtlı değil.'
+            ], 404);
         }
 
-        $token = Str::upper(Str::random(6)); // 6 karakterlik rastgele kod oluştur
-
-        // Kodun kaydedilmesi
-        VerificationCode::updateOrCreate(
-            ['email' => $user->email],
-            ['code' => $token] // expires_at'ı kaldırdık
-        );
-
-        Mail::to($user->email)->send(new VerificationCodeMail($token));
-
-        return response()->json(['message' => 'Reset password link sent to your email', 'token' => $token]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'E-posta adresi doğrulandı.',
+            'user' => $user
+        ], 200);
     }
 
 
