@@ -24,6 +24,7 @@ class User extends Authenticatable
         "phone",
         "organization_type",
         "organization_name",
+        "recovery_key",
     ];
 
     /**

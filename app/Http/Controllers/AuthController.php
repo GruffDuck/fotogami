@@ -28,6 +28,9 @@ class AuthController extends Controller
             'organization_name' => 'nullable|string',
         ]);
 
+        // 15 haneli rastgele kurtarma anahtarı oluştur
+        $recoveryKey = Str::random(15);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -35,13 +38,18 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'organization_type' => $request->organization_type,
             'organization_name' => $request->organization_name,
+            'recovery_key' => $recoveryKey,
         ]);
 
         // Token oluştur
         $token = $user->createToken('MyApp')->plainTextToken;
 
-        // Token ile birlikte kullanıcı bilgilerini döndür
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        // Token ve kurtarma anahtarı ile birlikte kullanıcı bilgilerini döndür
+        return response()->json([
+            'user' => $user, 
+            'token' => $token,
+            'recovery_key' => $recoveryKey
+        ], 201);
     }
 
     // Kullanıcı girişi
@@ -108,7 +116,6 @@ class AuthController extends Controller
         // Doğrulama kodunu bul
         $verificationCode = VerificationCode::where('email', $request->email)
             ->where('code', $request->code)
-            // expires_at kontrolünü kaldırdık
             ->first();
 
         if (!$verificationCode) {
@@ -122,13 +129,20 @@ class AuthController extends Controller
             return response()->json(['message' => 'Kullanıcı bulunamadı!'], 404);
         }
 
+        // Yeni kurtarma anahtarı oluştur
+        $newRecoveryKey = Str::random(15);
+
         $user->password = Hash::make($request->password);
+        $user->recovery_key = $newRecoveryKey;
         $user->save();
 
         // Doğrulama kodunu sil
         $verificationCode->delete();
 
-        return response()->json(['message' => 'Şifre başarıyla sıfırlandı!']);
+        return response()->json([
+            'message' => 'Şifre başarıyla sıfırlandı!',
+            'new_recovery_key' => $newRecoveryKey
+        ]);
     }
     // Mevcut kullanıcının bilgilerini getiren endpoint
     public function currentUser(Request $request)
