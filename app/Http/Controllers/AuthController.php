@@ -109,35 +109,26 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'code' => 'required',
+            'recovery_key' => 'required|string|size:15',
             'password' => 'required|min:8|confirmed',
         ]);
 
-        // Doğrulama kodunu bul
-        $verificationCode = VerificationCode::where('email', $request->email)
-            ->where('code', $request->code)
+        // Kullanıcıyı ve kurtarma anahtarını kontrol et
+        $user = User::where('email', $request->email)
+            ->where('recovery_key', $request->recovery_key)
             ->first();
 
-        if (!$verificationCode) {
-            return response()->json(['message' => 'Geçersiz doğrulama kodu!'], 400);
-        }
-
-        // Kullanıcının şifresini güncelle
-        $user = User::where('email', $request->email)->first();
-
         if (!$user) {
-            return response()->json(['message' => 'Kullanıcı bulunamadı!'], 404);
+            return response()->json(['message' => 'Geçersiz e-posta veya kurtarma anahtarı!'], 400);
         }
 
         // Yeni kurtarma anahtarı oluştur
         $newRecoveryKey = Str::random(15);
 
+        // Şifreyi ve kurtarma anahtarını güncelle
         $user->password = Hash::make($request->password);
         $user->recovery_key = $newRecoveryKey;
         $user->save();
-
-        // Doğrulama kodunu sil
-        $verificationCode->delete();
 
         return response()->json([
             'message' => 'Şifre başarıyla sıfırlandı!',
