@@ -23,4 +23,14 @@ class Package extends Model
         'background_color',
         'box_bg',
     ];
+
+    public function features()
+    {
+        return $this->hasMany(PackageFeature::class);
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_package')->withPivot(['recommended', 'description'])->withTimestamps();
+    }
 }

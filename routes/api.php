@@ -3,8 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PackageController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventMediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,13 +29,17 @@ Route::post('/auth/verification', [AuthController::class, 'sendResetLinkEmail'])
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->get('/current-user', [AuthController::class, 'currentUser']);
 
-Route::get('/packages', [PackageController::class, 'index']);
+// Event CRUD
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/events/{id}', [EventController::class, 'show']);
+Route::post('/events', [EventController::class, 'store']);
+Route::put('/events/{id}', [EventController::class, 'update']);
+Route::delete('/events/{id}', [EventController::class, 'destroy']);
 
+// Kullanıcının oluşturduğu tüm eventler
+Route::get('/users/{userId}/events', [EventController::class, 'getUserEvents']);
+// Organizasyonun oluşturduğu tüm eventler
+Route::get('/organizations/{organizationName}/events', [EventController::class, 'getOrganizationEvents']);
 
-
-Route::get('/products', [ProductController::class, 'getAllProducts']);
-Route::get('products/organization', [ProductController::class, 'getProductsByOrganizationName']);
-Route::get('/products/user', [ProductController::class, 'getProductByUser']);
-Route::get('/products/package', [ProductController::class, 'getProductByPackage']);
-Route::post('/products', [ProductController::class, 'createProduct']);
-Route::get("/products/email", [ProductController::class, 'getProductByEmail']);
+// EventMedia resource endpointleri (CRUD)
+Route::apiResource('event-media', EventMediaController::class);

@@ -45,4 +45,23 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // Kullanıcı tipi: 'organizational' veya 'individual'
+    public function isOrganizational()
+    {
+        return $this->organization_type === 'organizational';
+    }
+    public function isIndividual()
+    {
+        return $this->organization_type !== 'organizational';
+    }
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'created_by');
+    }
+    // Organizasyonel kullanıcı için birden fazla event ve paket
+    public function packages()
+    {
+        return $this->hasManyThrough(Package::class, Event::class, 'created_by', 'id', 'id', 'id');
+    }
 }
