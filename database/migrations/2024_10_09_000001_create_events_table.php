@@ -14,10 +14,10 @@ return new class extends Migration
             $table->date('date');
             $table->string('time')->nullable();
             $table->string('address');
-            $table->decimal('latitude', 10, 7);
-            $table->decimal('longitude', 10, 7);
-            $table->string('city');
-            $table->string('country');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
             $table->integer('expected_guests');
             $table->boolean('is_public_sharing_allowed');
             $table->enum('media_access_level', ['qr', 'password', 'public']);
@@ -94,4 +94,4 @@ return new class extends Migration
         Schema::dropIfExists('wedding_events');
         Schema::dropIfExists('events');
     }
-}; 
+};
