@@ -89,10 +89,10 @@ class EventController extends Controller
             // Paket ekleme kuralı (artık sadece bir paket eklenebilir)
             if ($request->has('package')) {
                 $package = $request->input('package');
-                $event->packages()->attach($package['id'], [
-                    'recommended' => $package['recommended'] ?? false,
-                    'description' => $package['description'] ?? null
-                ]);
+                    $event->packages()->attach($package['id'], [
+                        'recommended' => $package['recommended'] ?? false,
+                        'description' => $package['description'] ?? null
+                    ]);
             }
             DB::commit();
             return response()->json($event->load(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'packages.features']), 201);
@@ -164,7 +164,7 @@ class EventController extends Controller
                 // Eğer mevcutta farklı bir paket varsa, onu kaldır
                 foreach ($currentPackageIds as $packageId) {
                     if ($packageId != $newPackageId) {
-                        $event->packages()->detach($packageId);
+                    $event->packages()->detach($packageId);
                         $packageModel = \App\Models\Package::find($packageId);
                         if ($packageModel && $packageModel->events()->count() === 0) {
                             $packageModel->features()->delete();
@@ -174,9 +174,9 @@ class EventController extends Controller
                 }
                 // Yeni paketi ekle veya güncelle
                 $event->packages()->syncWithoutDetaching([$newPackageId => [
-                    'recommended' => $package['recommended'] ?? false,
-                    'description' => $package['description'] ?? null
-                ]]);
+                        'recommended' => $package['recommended'] ?? false,
+                        'description' => $package['description'] ?? null
+                    ]]);
             }
             DB::commit();
             return response()->json($event->load(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'packages.features']));
