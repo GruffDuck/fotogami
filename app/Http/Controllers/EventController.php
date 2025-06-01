@@ -86,19 +86,13 @@ class EventController extends Controller
                     TravelEvent::create(array_merge($request->only(['trip_type', 'surprise_planned', 'partner_name', 'destination_name']), ['event_id' => $event->id]));
                     break;
             }
-            // Paket ekleme kuralları
-            if ($request->has('packages')) {
-                $packages = $request->input('packages');
-                if ($user->isIndividual() && count($packages) > 1) {
-                    DB::rollBack();
-                    return response()->json(['error' => 'Bireysel kullanıcı bir etkinliğe sadece bir paket ekleyebilir.'], 403);
-                }
-                foreach ($packages as $package) {
-                    $event->packages()->attach($package['id'], [
-                        'recommended' => $package['recommended'] ?? false,
-                        'description' => $package['description'] ?? null
-                    ]);
-                }
+            // Paket ekleme kuralı (artık sadece bir paket eklenebilir)
+            if ($request->has('package')) {
+                $package = $request->input('package');
+                $event->packages()->attach($package['id'], [
+                    'recommended' => $package['recommended'] ?? false,
+                    'description' => $package['description'] ?? null
+                ]);
             }
             DB::commit();
             return response()->json($event->load(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'packages.features']), 201);
@@ -163,27 +157,26 @@ class EventController extends Controller
                     break;
             }
             // Paket güncelleme
-            if ($request->has('packages')) {
-                $newPackages = collect($request->input('packages'));
+            if ($request->has('package')) {
+                $package = $request->input('package');
                 $currentPackageIds = $event->packages()->pluck('packages.id')->toArray();
-                $newPackageIds = $newPackages->pluck('id')->toArray();
-                // Silinecek paketler (sadece bu eventte kullanılan ve başka eventte kullanılmayanlar silinir)
-                $toDelete = array_diff($currentPackageIds, $newPackageIds);
-                foreach ($toDelete as $packageId) {
-                    $event->packages()->detach($packageId);
-                    $package = \App\Models\Package::find($packageId);
-                    if ($package && $package->events()->count() === 0) {
-                        $package->features()->delete();
-                        $package->delete();
+                $newPackageId = $package['id'];
+                // Eğer mevcutta farklı bir paket varsa, onu kaldır
+                foreach ($currentPackageIds as $packageId) {
+                    if ($packageId != $newPackageId) {
+                        $event->packages()->detach($packageId);
+                        $packageModel = \App\Models\Package::find($packageId);
+                        if ($packageModel && $packageModel->events()->count() === 0) {
+                            $packageModel->features()->delete();
+                            $packageModel->delete();
+                        }
                     }
                 }
-                // Yeni ve güncellenen paketler
-                foreach ($newPackages as $package) {
-                    $event->packages()->syncWithoutDetaching([$package['id'] => [
-                        'recommended' => $package['recommended'] ?? false,
-                        'description' => $package['description'] ?? null
-                    ]]);
-                }
+                // Yeni paketi ekle veya güncelle
+                $event->packages()->syncWithoutDetaching([$newPackageId => [
+                    'recommended' => $package['recommended'] ?? false,
+                    'description' => $package['description'] ?? null
+                ]]);
             }
             DB::commit();
             return response()->json($event->load(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'packages.features']));
