@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 
-class EventPackage extends Pivot
+class EventPackage extends Model
 {
     protected $table = 'event_package';
     protected $fillable = [
-        'event_id', 'package_id', 'recommended', 'description'
+        'event_id',
+        'package_id',
+        'recommended',
+        'description',
+        'created_at',
+        'updated_at',
     ];
     public function event()
     {

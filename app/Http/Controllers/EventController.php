@@ -16,14 +16,14 @@ class EventController extends Controller
     public function index(Request $request)
     {
         // Tüm eventleri ve ilişkili alt tipleri getir
-        $events = Event::with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator'])->get();
+        $events = Event::with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'eventPackages'])->get();
         return response()->json($events);
     }
 
     public function show($id)
     {
         // Tek bir eventi ve ilişkili alt tipleri getir
-        $event = Event::with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator'])->findOrFail($id);
+        $event = Event::with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'eventPackages'])->findOrFail($id);
         return response()->json($event);
     }
 
@@ -222,7 +222,7 @@ class EventController extends Controller
     // Bir kullanıcının oluşturduğu tüm eventleri getir
     public function getUserEvents($userId)
     {
-        $events = Event::where('created_by', $userId)->with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'packages.features'])->get();
+        $events = Event::where('created_by', $userId)->with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'eventPackages'])->get();
         return response()->json($events);
     }
 
@@ -230,7 +230,7 @@ class EventController extends Controller
     public function getOrganizationEvents($organizationName)
     {
         $userIds = \App\Models\User::where('organization_name', $organizationName)->pluck('id');
-        $events = Event::whereIn('created_by', $userIds)->with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'packages.features'])->get();
+        $events = Event::whereIn('created_by', $userIds)->with(['wedding', 'graduation', 'corporate.sponsors', 'corporate.speakers', 'art', 'travel', 'media', 'creator', 'eventPackages'])->get();
         return response()->json($events);
     }
 }

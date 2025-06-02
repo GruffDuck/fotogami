@@ -55,4 +55,8 @@ class Event extends Model
     {
         return $this->belongsToMany(Package::class, 'event_package')->withPivot(['recommended', 'description'])->withTimestamps();
     }
+    public function eventPackages()
+    {
+        return $this->hasMany(\App\Models\EventPackage::class, 'event_id');
+    }
 }
