@@ -10,16 +10,12 @@ class CreatePackagesTable extends Migration
     {
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
-            $table->string('package_id');
-            $table->string('package_name');
-            $table->string('storage_description');
-            $table->string('upload_time_description');
-            $table->integer('upload_time_days'); // Gün cinsinden upload time
-            $table->string('storage_time_description');
-            $table->integer('storage_time_days'); // Gün cinsinden storage time
-            $table->string('price');
-            $table->string('background_color')->nullable();
-            $table->string('box_bg')->nullable();
+            $table->string('name');
+            $table->integer('price');
+            $table->integer('months');
+            $table->integer('storage');
+            $table->boolean('recommended')->default(false);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

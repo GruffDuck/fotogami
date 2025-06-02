@@ -12,16 +12,12 @@ class Package extends Model
     protected $table = 'packages';
 
     protected $fillable = [
-        'package_id',
-        'package_name',
-        'storage_description',
-        'upload_time_description',
-        'upload_time_days',  // Gün cinsinden upload time
-        'storage_time_description',
-        'storage_time_days',  // Gün cinsinden storage time
+        'name',
         'price',
-        'background_color',
-        'box_bg',
+        'months',
+        'storage',
+        'recommended',
+        'description',
     ];
 
     public function features()
