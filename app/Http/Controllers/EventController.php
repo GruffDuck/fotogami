@@ -8,6 +8,7 @@ use App\Models\GraduationEvent;
 use App\Models\CorporateEvent;
 use App\Models\ArtEvent;
 use App\Models\TravelEvent;
+use App\Models\EventParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +57,15 @@ class EventController extends Controller
                 'type'
             ]);
             $event = Event::create($eventData);
+
+            // Event creator'ı participants tablosuna admin olarak ekle
+            EventParticipant::create([
+                'event_id' => $event->id,
+                'user_id' => $user->id,
+                'role' => 'admin',
+                'joined_at' => now(),
+                'status' => 'admin',
+            ]);
 
             // Alt tip tablosuna ekle
             switch ($event->type) {
@@ -191,6 +201,12 @@ class EventController extends Controller
         DB::beginTransaction();
         try {
             $event = Event::findOrFail($id);
+            // Katılımcıları sil
+            \App\Models\EventParticipant::where('event_id', $event->id)->delete();
+            // İçerikleri sil
+            DB::table('event_contents')->where('event_id', $event->id)->delete();
+            // Grupları sil
+            DB::table('event_groups')->where('event_id', $event->id)->delete();
             $packageIds = $event->packages()->pluck('packages.id')->toArray();
             $event->wedding()?->delete();
             $event->graduation()?->delete();
@@ -211,6 +227,8 @@ class EventController extends Controller
                     $package->delete();
                 }
             }
+            // QR kod ve event key kayıtlarını sil
+            \App\Models\UserEventQrcode::where('event_id', $event->id)->delete();
             DB::commit();
             return response()->json(['message' => 'Event ve ilişkili veriler silindi.']);
         } catch (\Exception $e) {
